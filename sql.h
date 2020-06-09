@@ -3,8 +3,8 @@
 
 #include <string>
 #include <iostream>
-#include "../includes/parser.h"
-#include "../includes/table.h"
+#include "parser.h"
+#include "table.h"
 
 #include <algorithm>
 

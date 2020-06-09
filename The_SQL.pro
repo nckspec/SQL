@@ -7,17 +7,20 @@ SOURCES += \
         main.cpp
 
 HEADERS += \
-    ../includes/bptree.h \
-    ../includes/condition.h \
-    ../includes/map.h \
-    ../includes/mmap.h \
-    ../includes/parser.h \
-    ../includes/record.h \
-    ../includes/shaunting_yard.h \
-    ../includes/stokenizer.h \
-    ../includes/table.h \
-    ../includes/token.h \
-    ../includes/vector.h \
+    bptree.h \
+    condition.h \
+    map.h \
+    mmap.h \
+    parser.h \
+    record.h \
+    shaunting_yard.h \
+    stokenizer.h \
+    table.h \
+    token.h \
+    vector.h \
+    stack.h \
+    list.h \
+    queue.h \
     sql.h \
     z_output.h \
     z_work_report.h
