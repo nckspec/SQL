@@ -8,7 +8,7 @@ const int MAX_COLUMNS = 500;
 const int MAX_ROWS = 500;
 const int MAX_BUFFER = 200;
 
-const bool TOKEN_DEBUG = true;
+const bool TOKEN_DEBUG = false;
 
 class STokenizer
 {

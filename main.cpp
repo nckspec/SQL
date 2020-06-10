@@ -40,6 +40,8 @@ void test_parser()
     tests.push_back("batch \"_!select (2).text\"");
     tests.push_back("batch \"_!select.txt\"");
 
+    tests.push_back("batch test");
+
     tests.push_back("batch this is a test.txt");
 
 
@@ -60,17 +62,17 @@ void test_parser()
 
 int main()
 {
-//    SQL *s;
+    SQL *s;
 
-//    s = new SQL;
+    s = new SQL;
 
 
 
-//    s->run();
+    s->run();
 
-//    delete s;
+    delete s;
 
-    test_parser();
+//    test_parser();
 
 
 

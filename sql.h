@@ -43,7 +43,7 @@ private:
     const bool DEBUG = false;
 
     void remove_temp_files();
-    void load_batch_file(string file_name);
+    void run_batch_file(string file_name);
 
 
 
@@ -141,7 +141,7 @@ SQL::SQL()
 
 }
 
-void SQL::load_batch_file(string file_name)
+void SQL::run_batch_file(string file_name)
 {
 
     ifstream file;
@@ -187,6 +187,12 @@ void SQL::load_batch_file(string file_name)
 
     }
 
+    else
+    {
+        throw string("The file could not be opened!");
+    }
+
+
 
 }
 
@@ -217,10 +223,30 @@ void SQL::run_command(string input)
     {
         //  PROC: Store the table, command, fields, and conditions into separate
         //  variables
-        table = parse_tree["table"].to_vector().at(0);
+        if(parse_tree.contains("table"))
+        {
+            table = parse_tree["table"].to_vector().at(0);
+            assert(parse_tree["table"].to_vector().size() == 1);
+        }
+
+
         command = parse_tree["command"].to_vector().at(0);
-        fields = parse_tree["fields"].to_vector();
-        conditions = parse_tree["conditions"].to_vector();
+
+        //  PROC: Make sure that the parse_tree only has 1 command and 1 table
+        assert(parse_tree["command"].to_vector().size() == 1);
+
+
+        if(parse_tree.contains("fields"))
+        {
+            fields = parse_tree["fields"].to_vector();
+        }
+
+        if(parse_tree.contains("conditions"))
+        {
+            fields = parse_tree["conditions"].to_vector();
+        }
+
+
 
         if(DEBUG)
         {
@@ -234,9 +260,8 @@ void SQL::run_command(string input)
         }
 
 
-        //  PROC: Make sure that the parse_tree only has 1 command and 1 table
-        assert(parse_tree["command"].to_vector().size() == 1);
-        assert(parse_tree["table"].to_vector().size() == 1);
+
+
 
 
         //  PROC: If the command is "select" then perform a select
@@ -308,6 +333,26 @@ void SQL::run_command(string input)
             }
         }
 
+        if(command == "batch")
+        {
+
+            try {
+
+                if(parse_tree.contains("filename"))
+                {
+                    run_batch_file(parse_tree["filename"].to_vector().at(0));
+                }
+
+
+
+            } catch (string exc) {
+
+                cout << "Could not run batch file!\nError: " << exc << endl;
+
+            }
+
+        }
+
     }
 
 
@@ -366,7 +411,7 @@ void SQL::run()
 
         if(str == "batch")
         {
-            load_batch_file("test.txt");
+            run_batch_file("test.txt");
         }
 
 

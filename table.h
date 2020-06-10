@@ -276,6 +276,7 @@ Record Table::get_record(long record_num)
         //  PROC: If the record could not be opened, throw an error
         else
         {
+            file.close();
             throw string("Record could not be read!");
         }
     }
