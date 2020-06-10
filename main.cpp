@@ -1,5 +1,6 @@
 #include <iostream>
 #include "sql.h"
+#include <string.h>
 
 /**************************************************************************
 * Author:           Nicholas Spector

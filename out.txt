@@ -1,0 +1,23 @@
+diff --git a/The_SQL.pro b/The_SQL.pro
+index 93162d8..ac9f680 100644
+--- a/The_SQL.pro
++++ b/The_SQL.pro
+@@ -7,6 +7,7 @@ SOURCES += \
+         main.cpp
+ 
+ HEADERS += \
++    array_functions.h \
+     bptree.h \
+     condition.h \
+     map.h \
+diff --git a/main.cpp b/main.cpp
+index 82992d8..10ee4d3 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -1,5 +1,6 @@
+ #include <iostream>
+ #include "sql.h"
++#include <string.h>
+ 
+ /**************************************************************************
+ * Author:           Nicholas Spector

@@ -7,6 +7,7 @@ SOURCES += \
         main.cpp
 
 HEADERS += \
+    array_functions.h \
     bptree.h \
     condition.h \
     map.h \

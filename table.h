@@ -853,8 +853,8 @@ void Table::insert(Vector<string> field_inserts)
 
     else
     {
-        throw "The amount of values being inserted is not equal to the amount "
-        "of available fields!";
+        throw string("The amount of values being inserted is not equal to the amount "
+        "of available fields!");
 
     }
 
@@ -961,7 +961,7 @@ Vector<unsigned int> Table::select_fields(Vector<string> fields)
 
     if(fields.size() == 0)
     {
-        throw "No fields were specified";
+        throw string("No fields were specified");
     }
 
     //  PROC: If the only field speicifed is '*" then we simply return all of
@@ -995,7 +995,7 @@ Vector<unsigned int> Table::select_fields(Vector<string> fields)
 
             else
             {
-                throw "Field does not exist! (before from)";
+                throw string("Field does not exist! (before from)");
             }
 
 
