@@ -273,19 +273,19 @@ void test_parser()
 
 int main()
 {
-    SQL *s;
+//    SQL *s;
 
-    s = new SQL;
+//    s = new SQL;
 
 
 
-    s->run();
+//    s->run();
 
-    delete s;
+//    delete s;
 
 //    test_table();
 
-//    test_finding_conditions();
+    test_finding_conditions();
 
 //    test_parser();
 

@@ -14,7 +14,7 @@ enum keys {START = 1, SELECT, INSERT, MAKE, CREATE, BATCH, DROP, FIELDS, TABLE, 
 
 
 
-enum states {SELECT_STATE = 30, INSERT_STATE = 50, MAKE_TABLE_STATE = 70, BATCH_STATE = 90, DROP_STATE = 95};
+enum states {SELECT_STATE = 30, INSERT_STATE = 50, MAKE_TABLE_STATE = 70, BATCH_STATE = 90, DROP_STATE = 95, DELETE_STATE = 120, WHERE_STATE = 140};
 
 const bool P_DEBUG = false;
 
@@ -173,28 +173,28 @@ void Parser::parse()
                 break;
 
 
-            case SELECT_STATE + 6:
+            case WHERE_STATE + 1:
                 condition = condition + token.token_str() + ",";
                 break;
 
-            case SELECT_STATE + 7:
+            case WHERE_STATE + 2:
                 condition = condition + token.token_str();
                 break;
 
 
-            case SELECT_STATE + 8:
+            case WHERE_STATE + 3:
                 //  PROC: Append the token to condition. Since this is the
                 //  last state, append the full condition to the parse_tree
                 condition = condition + token.token_str();
                 break;
 
-            case SELECT_STATE + 9:
+            case WHERE_STATE + 4:
 
                 //  PROC: Put single quotes at the beginning of the value
                 condition = condition + "'";
                 break;
 
-            case SELECT_STATE + 10:
+            case WHERE_STATE + 5:
 
 
                 //  PROC: If there is already a value after the quotations,
@@ -218,7 +218,7 @@ void Parser::parse()
 
                 break;
 
-            case SELECT_STATE + 11:
+            case WHERE_STATE + 6:
 
                 //  PROC: Since we have passed from state 10, we can set value
                 //  on deck to false
@@ -249,19 +249,19 @@ void Parser::parse()
 
                 break;
 
-            case SELECT_STATE + 12:
+            case WHERE_STATE + 7:
 
                 //  PROC: Store a closed parentheses
                 condition = condition + "," + token.token_str();
                 break;
 
-            case SELECT_STATE + 13:
+            case WHERE_STATE + 8:
 
                 //  PROC: store the and || or operator
                 condition = condition + "," + token.token_str() + ",";
                 break;
 
-            case SELECT_STATE + 14:
+            case WHERE_STATE + 9:
 
                 condition = condition + token.token_str();
 
@@ -288,7 +288,7 @@ void Parser::parse()
                 break;
 
 
-            case SELECT_STATE + 15:
+            case WHERE_STATE + 10:
                 //  PROC: Append the token to condition. Since this is the
                 //  last state, append the full condition to the parse_tree
                 condition = condition + "," +  token.token_str();
@@ -430,9 +430,162 @@ void Parser::parse()
                 temp_parse_tree["table"] += token.token_str();
                 break;
 
+            case DELETE_STATE:
+                temp_parse_tree["command"] += token.token_str();
+                break;
+
+
+            case DELETE_STATE + 2:
+                temp_parse_tree["table"] += token.token_str();
+                break;
+
+
+            case DELETE_STATE + 4:
+                condition = condition + token.token_str() + ",";
+                break;
+
+            case DELETE_STATE + 5:
+                condition = condition + token.token_str();
+                break;
+
+
+            case DELETE_STATE + 6:
+                //  PROC: Append the token to condition. Since this is the
+                //  last state, append the full condition to the parse_tree
+                condition = condition + token.token_str();
+                break;
+
+            case DELETE_STATE + 7:
+
+                //  PROC: Put single quotes at the beginning of the value
+                condition = condition + "'";
+                break;
+
+            case DELETE_STATE + 8:
+
+
+                //  PROC: If there is already a value after the quotations,
+                //  then put a space between that value and the next part of
+                //  the value string
+                if(value_on_deck)
+                {
+                    condition = condition + " " + token.token_str();
+                }
+
+                //  PROC: If there is no value after the quotations, insert
+                //  the value without spaces so that it will be surrounded by
+                //  'example' without any spaces.
+                else
+                {
+                    condition = condition + token.token_str();
+                    value_on_deck = true;
+                }
+
+
+
+                break;
+
+            case DELETE_STATE + 9:
+
+                //  PROC: Since we have passed from state 10, we can set value
+                //  on deck to false
+                value_on_deck = false;
+
+                //  PROC: End the value with a single quote
+                condition = condition + "'";
+
+                //  PROC: If there is already conditions stored in the temp
+                //  parse tree, then we append the new conditions. Or elese
+                //  store the conditions for the first time
+                if(temp_parse_tree.contains("conditions"))
+                {
+
+                    (*it).append(condition);
+
+                    //  PROC: Clear condition
+                    condition = "";
+                }
+                else
+                {
+                    temp_parse_tree["conditions"] += condition;
+                    it = temp_parse_tree["conditions"].begin();
+
+                    //  PROC: Clear condition
+                    condition = "";
+                }
+
+                break;
+
+            case DELETE_STATE + 10:
+
+                //  PROC: Store a closed parentheses
+                condition = condition + "," + token.token_str();
+                break;
+
+            case DELETE_STATE + 11:
+
+                //  PROC: store the and || or operator
+                condition = condition + "," + token.token_str() + ",";
+                break;
+
+            case DELETE_STATE + 12:
+
+                condition = condition + token.token_str();
+
+                //  PROC: If there is already conditions stored in the temp
+                //  parse tree, then we append the new conditions. Or elese
+                //  store the conditions for the first time
+                if(temp_parse_tree.contains("conditions"))
+                {
+
+                    (*it).append(condition);
+
+                    //  PROC: Clear condition
+                    condition = "";
+                }
+                else
+                {
+                    temp_parse_tree["conditions"] += condition;
+                    it = temp_parse_tree["conditions"].begin();
+
+                    //  PROC: Clear condition
+                    condition = "";
+                }
+
+                break;
+
+
+            case DELETE_STATE + 13:
+                //  PROC: Append the token to condition. Since this is the
+                //  last state, append the full condition to the parse_tree
+                condition = condition + "," +  token.token_str();
+
+                //  PROC: If there is already conditions stored in the temp
+                //  parse tree, then we append the new conditions. Or elese
+                //  store the conditions for the first time
+                if(temp_parse_tree.contains("conditions"))
+                {
+
+                    (*it).append(condition);
+
+                    //  PROC: Clear condition
+                    condition = "";
+                }
+                else
+                {
+                    temp_parse_tree["conditions"] += condition;
+                    it = temp_parse_tree["conditions"].begin();
+
+                    //  PROC: Clear condition
+                    condition = "";
+                }
+
+                break;
 
 
             }
+
+
 
 
 
@@ -582,44 +735,44 @@ void Parser::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     //  PROC: This is a SUCCESS STATE. It is possible to get a WHERE after this
     //  but if we dont receive anything, we have enough information to perform
     //  a select command
-    mark_cell(SELECT_STATE + 4, _table, WHERE, WHERE, SELECT_STATE + 5);
+    mark_cell(SELECT_STATE + 4, _table, WHERE, WHERE, WHERE_STATE);
 
     //  PROC: This is a WHERE STATE. We are looking for a symbol
-    mark_cell(SELECT_STATE + 5, _table, SYMBOL, SYMBOL, SELECT_STATE + 7);
-    mark_cell(SELECT_STATE + 5, _table, OPEN_PARENTHESES, OPEN_PARENTHESES, SELECT_STATE + 6);
+    mark_cell(WHERE_STATE, _table, SYMBOL, SYMBOL, WHERE_STATE + 2);
+    mark_cell(WHERE_STATE, _table, OPEN_PARENTHESES, OPEN_PARENTHESES, WHERE_STATE + 1);
 
-    mark_cell(SELECT_STATE + 6, _table, SYMBOL, SYMBOL, SELECT_STATE + 7);
+    mark_cell(WHERE_STATE + 1, _table, SYMBOL, SYMBOL, WHERE_STATE + 2);
 
-    mark_cell(SELECT_STATE + 7, _table, OPERATION, OPERATION, SELECT_STATE + 8);
+    mark_cell(WHERE_STATE + 2, _table, OPERATION, OPERATION, WHERE_STATE + 3);
 
-    mark_cell(SELECT_STATE + 8, _table, SYMBOL, SYMBOL, SELECT_STATE + 14);
-    mark_cell(SELECT_STATE + 8, _table, QUOTATIONS, QUOTATIONS, SELECT_STATE + 9);
+    mark_cell(WHERE_STATE + 3, _table, SYMBOL, SYMBOL, WHERE_STATE + 9);
+    mark_cell(WHERE_STATE + 3, _table, QUOTATIONS, QUOTATIONS, WHERE_STATE + 4);
 
-    mark_cell(SELECT_STATE + 9, _table, SYMBOL, SYMBOL, SELECT_STATE + 10);
+    mark_cell(WHERE_STATE + 4, _table, SYMBOL, SYMBOL, WHERE_STATE + 5);
 
-    mark_cell(SELECT_STATE + 10, _table, SYMBOL, SYMBOL, SELECT_STATE + 10);
-    mark_cell(SELECT_STATE + 10, _table, QUOTATIONS, QUOTATIONS, SELECT_STATE + 11);
+    mark_cell(WHERE_STATE + 5, _table, SYMBOL, SYMBOL, WHERE_STATE + 5);
+    mark_cell(WHERE_STATE + 5, _table, QUOTATIONS, QUOTATIONS, WHERE_STATE + 6);
 
-    mark_state(_table, SELECT_STATE + 11, true);
-    mark_cell(SELECT_STATE + 11, _table, CLOSED_PARENTHESES, CLOSED_PARENTHESES, SELECT_STATE + 12);
-    mark_cell(SELECT_STATE + 11, _table, AND, AND, SELECT_STATE + 13);
-    mark_cell(SELECT_STATE + 11, _table, OR, OR, SELECT_STATE + 13);
+    mark_state(_table, WHERE_STATE + 6, true);
+    mark_cell(WHERE_STATE + 6, _table, CLOSED_PARENTHESES, CLOSED_PARENTHESES, WHERE_STATE + 7);
+    mark_cell(WHERE_STATE + 6, _table, AND, AND, WHERE_STATE + 8);
+    mark_cell(WHERE_STATE + 6, _table, OR, OR, WHERE_STATE + 8);
 
-    mark_state(_table, SELECT_STATE + 12, true);
-    mark_cell(SELECT_STATE + 12, _table, AND, AND, SELECT_STATE + 13);
-    mark_cell(SELECT_STATE + 12, _table, OR, OR, SELECT_STATE + 13);
+    mark_state(_table, WHERE_STATE + 7, true);
+    mark_cell(WHERE_STATE + 7, _table, AND, AND, WHERE_STATE + 8);
+    mark_cell(WHERE_STATE + 7, _table, OR, OR, WHERE_STATE + 8);
 
-    mark_cell(SELECT_STATE + 13, _table, SYMBOL, SYMBOL, SELECT_STATE + 7);
-    mark_cell(SELECT_STATE + 13, _table, OPEN_PARENTHESES, OPEN_PARENTHESES, SELECT_STATE + 6);
+    mark_cell(WHERE_STATE + 8, _table, SYMBOL, SYMBOL, WHERE_STATE + 2);
+    mark_cell(WHERE_STATE + 8, _table, OPEN_PARENTHESES, OPEN_PARENTHESES, WHERE_STATE + 1);
 
-    mark_state(_table, SELECT_STATE + 14, true);
-    mark_cell(SELECT_STATE + 14, _table, AND, AND, SELECT_STATE + 13);
-    mark_cell(SELECT_STATE + 14, _table, OR, OR, SELECT_STATE + 13);
-    mark_cell(SELECT_STATE + 14, _table, CLOSED_PARENTHESES, CLOSED_PARENTHESES, SELECT_STATE + 15);
+    mark_state(_table, WHERE_STATE + 9, true);
+    mark_cell(WHERE_STATE + 9, _table, AND, AND, WHERE_STATE + 8);
+    mark_cell(WHERE_STATE + 9, _table, OR, OR, WHERE_STATE + 8);
+    mark_cell(WHERE_STATE + 9, _table, CLOSED_PARENTHESES, CLOSED_PARENTHESES, WHERE_STATE + 10);
 
-    mark_state(_table, SELECT_STATE + 15, true);
-    mark_cell(SELECT_STATE + 15, _table, AND, AND, SELECT_STATE + 13);
-    mark_cell(SELECT_STATE + 15, _table, OR, OR, SELECT_STATE + 13);
+    mark_state(_table, WHERE_STATE + 10, true);
+    mark_cell(WHERE_STATE + 10, _table, AND, AND, WHERE_STATE + 8);
+    mark_cell(WHERE_STATE + 10, _table, OR, OR, WHERE_STATE + 8);
 
 
 
@@ -666,6 +819,50 @@ void Parser::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     mark_cell(DROP_STATE, _table, TABLE, TABLE, DROP_STATE + 1);
     mark_cell(DROP_STATE + 1, _table, SYMBOL, SYMBOL, DROP_STATE + 2);
     mark_state(_table, DROP_STATE + 2, true);
+
+
+    //  PROC: DELETE COMMAND
+    mark_cell(DELETE_STATE, _table, FROM, FROM, DELETE_STATE + 1);
+    mark_cell(DELETE_STATE + 1, _table, SYMBOL, SYMBOL, DELETE_STATE + 2);
+    mark_cell(DELETE_STATE + 2, _table, WHERE, WHERE, DELETE_STATE + 3);
+
+    //  PROC: This is a WHERE STATE. We are looking for a symbol
+    mark_cell(DELETE_STATE + 3, _table, SYMBOL, SYMBOL, SELECT_STATE + 4);
+    mark_cell(DELETE_STATE + 3, _table, OPEN_PARENTHESES, OPEN_PARENTHESES, DELETE_STATE + 5);
+
+    mark_cell(DELETE_STATE + 5, _table, SYMBOL, SYMBOL, DELETE_STATE + 6);
+
+    mark_cell(DELETE_STATE + 6, _table, OPERATION, OPERATION, DELETE_STATE + 7);
+
+    mark_cell(DELETE_STATE + 7, _table, SYMBOL, SYMBOL, SELECT_STATE + 8);
+    mark_cell(DELETE_STATE + 8, _table, QUOTATIONS, QUOTATIONS, DELETE_STATE + 9);
+
+    mark_cell(DELETE_STATE + 9, _table, SYMBOL, SYMBOL, DELETE_STATE + 10);
+
+    mark_cell(DELETE_STATE + 10, _table, SYMBOL, SYMBOL, DELETE_STATE + 10);
+    mark_cell(DELETE_STATE + 10, _table, QUOTATIONS, QUOTATIONS, DELETE_STATE + 11);
+
+    mark_state(_table, DELETE_STATE + 11, true);
+    mark_cell(DELETE_STATE + 11, _table, CLOSED_PARENTHESES, CLOSED_PARENTHESES, DELETE_STATE + 12);
+    mark_cell(DELETE_STATE + 11, _table, AND, AND, DELETE_STATE + 13);
+    mark_cell(DELETE_STATE + 11, _table, OR, OR, DELETE_STATE + 13);
+
+    mark_state(_table, DELETE_STATE + 12, true);
+    mark_cell(DELETE_STATE + 12, _table, AND, AND, DELETE_STATE + 13);
+    mark_cell(DELETE_STATE + 12, _table, OR, OR, DELETE_STATE + 13);
+
+    mark_cell(DELETE_STATE + 13, _table, SYMBOL, SYMBOL, DELETE_STATE + 7);
+    mark_cell(DELETE_STATE + 13, _table, OPEN_PARENTHESES, OPEN_PARENTHESES, DELETE_STATE + 6);
+
+    mark_state(_table, DELETE_STATE + 14, true);
+    mark_cell(DELETE_STATE + 14, _table, AND, AND, DELETE_STATE + 13);
+    mark_cell(DELETE_STATE + 14, _table, OR, OR, DELETE_STATE + 13);
+    mark_cell(DELETE_STATE + 14, _table, CLOSED_PARENTHESES, CLOSED_PARENTHESES, DELETE_STATE + 15);
+
+    mark_state(_table, DELETE_STATE + 15, true);
+    mark_cell(DELETE_STATE + 15, _table, AND, AND, DELETE_STATE + 13);
+    mark_cell(DELETE_STATE + 15, _table, OR, OR, DELETE_STATE + 13);
+
 
 
 
