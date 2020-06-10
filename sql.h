@@ -385,17 +385,26 @@ void SQL::run_command(string input)
         {
 
 
-            cout << "\n\nTable: " << table << " has been dropped.\n\n";
 
+            //  PROC: Query the table 'tables.sql' for the record # of the record
+            //  in 'tables.sql' that holds the name of the table we are trying
+            //  to dlete
             Vector<long> record_nums = tables["tables"].select_conditions({"name=" + table});
 
 
-
-            if(record_nums.size() > 0)
+            //  PROC: If a record # was returned, then we delete the table
+            //  name from 'tables.sql' then we remove its temp files, then
+            //  we delete the database file itself
+            if(!record_nums.empty())
             {
                 tables["tables"].drop_record(record_nums.at(0));
+                tables[table].remove_temp_files();
+                remove(tables[table].get_filename().c_str());
+
+                cout << "\n\nTable: " << table << " has been dropped.\n\n";
             }
 
+            //  PROC: Put a blank table into the tables map
             tables[table] = Table();
 
 

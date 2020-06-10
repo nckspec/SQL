@@ -87,6 +87,7 @@ public:
 
     void drop_record(long record_num);
 
+    string get_filename() const;
 
 
 
@@ -122,6 +123,11 @@ private:
 
 
 };
+
+string Table::get_filename() const
+{
+    return file_name;
+}
 
 void Table::erase()
 {
