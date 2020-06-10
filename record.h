@@ -86,6 +86,8 @@ public:
 
     bool is_deleted();
 
+    bool mark_dropped(fstream &outs, long record_num);
+
 
 
     friend ostream& operator<<(ostream& outs,
@@ -93,6 +95,8 @@ public:
 private:
 
     bool exists_in_file(fstream &ins, long recno);
+
+
 
     static const int MAX = 10;
     static const int MAX_ROWS = 20;
@@ -161,6 +165,49 @@ Vector<string> Record::get_fields(Vector<unsigned int> field_num) const
     return output;
 }
 
+bool Record::mark_dropped(fstream &outs, long record_num)
+{
+    //  PROC: Calculate the position of the record in the database file by
+    //  multiplying the record number we want by its size
+    long pos= record_num * sizeof(record);
+
+    if(R_DEBUG)
+    {
+        cout << "\n\n------------------------\n\n";
+        cout << "\n\nFunction Record: mark_dropped()\n\n";
+        cout << "sizeof(record): " << sizeof(record) << endl;
+        cout << "recno: " << record_num << endl;
+        cout << "pos: " << pos << endl;
+        cout << "\n\nEnd of Function Record: mark_dropped()\n\n";
+
+    }
+
+    //  PROC: If the record exists in the database file
+    if(exists_in_file(outs, record_num))
+    {
+        //  PROC: Move to the position in the binary file
+        outs.seekg(pos, ios_base::beg);
+
+        //  PROC: Modify the field that determines whether the field will be
+        //  read or not
+        strcpy(record[0], "NO");
+
+        //  PROC: Write the record to the end of the file
+        outs.write(record[0], sizeof(record[0]));
+
+        return true;
+
+
+    }
+
+    else
+    {
+        return false;
+
+    }
+
+
+}
 
 long Record::write(fstream &outs){
 

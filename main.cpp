@@ -58,6 +58,33 @@ Vector<mmap<string, long > > value_map;
 //  in the value_map
 map<string, unsigned int> field_map;
 
+void test_table()
+{
+
+
+    Table table("employees", {"first", "last", "major"});
+
+
+    table.insert({"nick roger", "last", "CS"});
+
+    table.insert({"alex", "roger", "Engineer"});
+
+    table.insert({"alex", "roger", "Engineer"});
+
+    cout << table.select_all() << endl;
+
+    Record rec;
+
+    fstream outs;
+
+    table.drop_record(2);
+
+    cout << table.select_all() << endl;
+
+
+
+}
+
 void insert_field_map(string field, string value, long record_num)
 {
     if(SQL_DEBUG)
@@ -219,28 +246,30 @@ void test_finding_conditions()
 void test_parser()
 {
 
-    Vector<string> tests;
+//    Vector<string> tests;
 
-    tests.push_back("batch woah.txt");
-    tests.push_back("batch \"this is a test.txt\"");
-    tests.push_back("batch \"_!select (2).text\"");
-    tests.push_back("batch \"_!select.txt\"");
+//    tests.push_back("batch woah.txt");
+//    tests.push_back("batch \"this is a test.txt\"");
+//    tests.push_back("batch \"_!select (2).text\"");
+//    tests.push_back("batch \"_!select.txt\"");
 
-    tests.push_back("batch test");
+//    tests.push_back("batch test");
 
-    tests.push_back("batch this is a test.txt");
+//    tests.push_back("batch this is a test.txt");
 
 
-    for(unsigned int i = 0; i < tests.size(); i++)
-    {
-        Parser p(tests.at(i));
+//    for(unsigned int i = 0; i < tests.size(); i++)
+//    {
+//        Parser p(tests.at(i));
 
-        p.parse();
+//        p.parse();
 
-        mmap<string, string> parse_tree = p.get_parse_table();
+//        mmap<string, string> parse_tree = p.get_parse_table();
 
-        cout << parse_tree << endl;
-    }
+//        cout << parse_tree << endl;
+//    }
+
+//    test_table();
 
 
 }
@@ -248,15 +277,17 @@ void test_parser()
 
 int main()
 {
-    SQL *s;
+//    SQL *s;
 
-    s = new SQL;
+//    s = new SQL;
 
 
 
-    s->run();
+//    s->run();
 
-    delete s;
+//    delete s;
+
+    test_table();
 
 //    test_finding_conditions();
 

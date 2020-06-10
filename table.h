@@ -85,6 +85,8 @@ public:
 
     void remove_temp_files();
 
+    void drop_record(long record_num);
+
 
 
 
@@ -380,6 +382,7 @@ void Table::insert_field_map(string field, string value, long record_num)
 //     return *this;
 //}
 
+
 void Table::copy(const Table &table)
 {
     if(TABLE_DEBUG)
@@ -646,6 +649,24 @@ Table::Table(string name, Vector<string> field_names)
 
     file.close();
 
+
+}
+
+void Table::drop_record(long record_num)
+{
+    fstream outs;       //  CALC: File object used to access the sql file for
+                        //  table
+
+    Record rec;         //  CALC:
+
+    //  PROC: Opened the sql file for the table
+    open_fileRW(outs, file_name);
+
+    //  PROC: Drop the record
+    rec.mark_dropped(outs, record_num);
+
+    //  PROC: Close the file
+    outs.close();
 
 }
 
@@ -1110,8 +1131,20 @@ string Table::select_all()
 
     try {
 
-        //  PROC: Get the fields of the table
-        fields = get_record(0).get_fields();
+
+        try {
+
+            //  PROC: Get the fields of the table
+            fields = get_record(0).get_fields();
+
+        } catch (string str) {
+
+            cout << str << endl;
+
+        }
+
+
+        output << setw(3) << left << "#";
 
         //  PROC: Loop through each field, appending it to the string steam
         //  with formattng
@@ -1147,16 +1180,22 @@ string Table::select_all()
         try {
             fields = get_record(record_nums.at(i)).get_fields();
 
+
+            output << setw(3) << left << record_nums.at(i);
+
             for(unsigned int i = 0; i < fields.size(); i++)
             {
                 output << setw(15) << left << fields.at(i);
             }
+
 
             output << "\n";
         } catch (string exception) {
 
             cout << exception << endl;
         }
+
+
     }
 
 
