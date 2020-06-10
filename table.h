@@ -85,9 +85,14 @@ public:
 
     void remove_temp_files();
 
-    void drop_record(long record_num);
+    bool drop_record(long record_num);
+
+    void drop_records(Vector<long> record_nums);
+    void drop_records(mmap<string, string> &parse_table);
 
     string get_filename() const;
+
+
 
 
 
@@ -119,6 +124,7 @@ private:
     void setup_field_map(Vector<string> field_names);
 
 
+    bool DEBUG = false;
 
 
 
@@ -273,7 +279,7 @@ Record Table::get_record(long record_num)
         cout << "record_num: " << record_num << endl << endl;
     }
 
-    assert(record_num <= record_nums.size());
+    assert(record_num <= record_nums.back());
 
     //  PROC: Check that the file exists
     if(file_exists(file_name))
@@ -535,20 +541,27 @@ Table::Table(string name)
             //  read.
             while(rec.read(file, index))
             {
-                //  PROC: Add the record num to the record_nums vector that
-                //  keeps track of all record numbers
-                record_nums.push_back(index);
 
-                //  PROC: Load the values of the record into this vector
-                record_values = rec.get_fields();
-
-                //  PROC: Loop through each value and store the record num
-                //  into the map.
-                for(unsigned int i = 0; i < record_values.size(); i++)
+                //  PROC: Make sure that the record has not been deleted
+                if(!rec.is_deleted())
                 {
-                    //  PROC: Insert the field name, the value, and the record number
-                    insert_field_map(field_names.at(i), record_values.at(i), index);
+                    //  PROC: Add the record num to the record_nums vector that
+                    //  keeps track of all record numbers
+                    record_nums.push_back(index);
+
+                    //  PROC: Load the values of the record into this vector
+                    record_values = rec.get_fields();
+
+                    //  PROC: Loop through each value and store the record num
+                    //  into the map.
+                    for(unsigned int i = 0; i < record_values.size(); i++)
+                    {
+                        //  PROC: Insert the field name, the value, and the record number
+                        insert_field_map(field_names.at(i), record_values.at(i), index);
+                    }
                 }
+
+
 
 
                 index++;
@@ -668,21 +681,102 @@ Table::Table(string name, Vector<string> field_names)
 
 }
 
-void Table::drop_record(long record_num)
+void Table::drop_records(mmap<string, string> &parse_table)
+{
+    assert(parse_table.contains("command") && parse_table["command"].to_vector().at(0) == "delete");
+
+    Vector<long> record_nums;       //  PROC: Holds the record numbers that
+                                    //  match the conditions we are deleting
+
+    //  PROC: Get the record numbers that match the conditions passed
+    //  with the delete command
+    record_nums = select_conditions(parse_table["conditions"].to_vector());
+
+    //  PROC: Delete the records
+    drop_records(record_nums);
+
+}
+
+bool Table::drop_record(long record_num)
 {
     fstream outs;       //  CALC: File object used to access the sql file for
                         //  table
 
-    Record rec;         //  CALC:
+    Record rec;         //  CALC: Will be used to mark the specific record
+                        //  as being dropped from the table
+
+
+    if(DEBUG)
+    {
+        cout << "\n\ncalled Table::drop_record()\n";
+        cout << "record_num: " << record_num << endl << endl;
+    }
 
     //  PROC: Opened the sql file for the table
     open_fileRW(outs, file_name);
 
     //  PROC: Drop the record
-    rec.mark_dropped(outs, record_num);
+    if(rec.mark_dropped(outs, record_num))
+    {
+        //  PROC: Close the file
+        outs.close();
 
-    //  PROC: Close the file
-    outs.close();
+        //  PROC: Find the record_num in the vector that holds all of the
+        //  record_nums of the table and remove it
+        for(unsigned int i = 0; i < record_nums.size(); i++)
+        {
+            if(record_nums.at(i) == record_num)
+            {
+                record_nums.erase(i);
+            }
+        }
+
+        if(DEBUG)
+        {
+            cout << "\n\n end of Table::drop_record()\n";
+            cout << "record_num: " << record_num << endl << endl;
+            cout << "record_nums: " << record_nums.to_string() << endl;
+        }
+
+        return true;
+    }
+
+    //  PROC: If we can't mark the record as dropped
+    else
+    {
+        //  PROC: Close the file
+        outs.close();
+
+        if(DEBUG)
+        {
+            cout << "\n\n end of Table::drop_record()\n";
+            cout << "record_num: " << record_num << endl << endl;
+        }
+
+        return false;
+    }
+
+
+
+
+}
+
+void Table::drop_records(Vector<long> record_nums)
+{
+
+    if(DEBUG)
+    {
+        cout << "\n\n called Table::drop_records()\n";
+        cout << "record_num: " << record_nums.to_string() << endl << endl;
+    }
+
+    for(unsigned int i = 0; i < record_nums.size(); i++)
+    {
+        if(drop_record(record_nums.at(i)))
+        {
+            cout << "\n\nRecord #" << record_nums.at(i) << " dropped!\n\n";
+        }
+    }
 
 }
 
@@ -1119,10 +1213,17 @@ Table Table::select(Parser parser)
     {
 
 
-        //  PROC: This uses get_record to get the specifed record using the
-        //  record_num. then it gets the specified fields using get_fields,
-        //  using the field_nums that we are seeking
-        table.insert(get_record(record_nums.at(i)).get_fields(field_nums));
+        try {
+
+            //  PROC: This uses get_record to get the specifed record using the
+            //  record_num. then it gets the specified fields using get_fields,
+            //  using the field_nums that we are seeking
+            table.insert(get_record(record_nums.at(i)).get_fields(field_nums));
+
+        } catch (string str) {
+
+        }
+
     }
 
 
