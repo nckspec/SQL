@@ -253,7 +253,10 @@ void test_parser()
 
 //    tests.push_back("batch test");
 
-    tests.push_back("drop table name");
+    tests.push_back("delete from tablename");
+    tests.push_back("delete from tablename where name=spector and age=26");
+    tests.push_back("delete from tablename where (name=spector and age=25) or name = jack");
+    tests.push_back("delete from tablename where name = jack and (age=25 or name = mason)");
 
 
     for(unsigned int i = 0; i < tests.size(); i++)
@@ -285,9 +288,9 @@ int main()
 
 //    test_table();
 
-    test_finding_conditions();
+//    test_finding_conditions();
 
-//    test_parser();
+    test_parser();
 
 
 

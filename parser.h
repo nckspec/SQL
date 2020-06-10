@@ -8,7 +8,7 @@
 
 //  PROC: The AND must come after the OR for the order of operations to be correct
 //  (for precedence)
-enum keys {START = 1, SELECT, INSERT, MAKE, CREATE, BATCH, DROP, FIELDS, TABLE,  WHERE, TYPE, ALL, FROM, ALPHA,
+enum keys {START = 1, SELECT, INSERT, MAKE, CREATE, BATCH, DROP, DELETE, FIELDS, TABLE,  WHERE, TYPE, ALL, FROM, ALPHA,
            ASTERISK, SYMBOL, COMMA, OPERATION, VALUES, INTO, QUOTATIONS,
            OPEN_PARENTHESES, CLOSED_PARENTHESES, OR, AND};
 
@@ -665,6 +665,8 @@ void Parser::create_token_map()
 
     token_map["drop"] = DROP;
 
+    token_map["delete"] = DELETE;
+
 
 }
 
@@ -705,6 +707,7 @@ void Parser::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     mark_cell(START_STATE, _table, CREATE, CREATE, MAKE_TABLE_STATE);
     mark_cell(START_STATE, _table, BATCH, BATCH, BATCH_STATE);
     mark_cell(START_STATE, _table, DROP, DROP, DROP_STATE);
+    mark_cell(START_STATE, _table, DELETE, DELETE, DELETE_STATE);
 
 
 
@@ -824,44 +827,8 @@ void Parser::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     //  PROC: DELETE COMMAND
     mark_cell(DELETE_STATE, _table, FROM, FROM, DELETE_STATE + 1);
     mark_cell(DELETE_STATE + 1, _table, SYMBOL, SYMBOL, DELETE_STATE + 2);
-    mark_cell(DELETE_STATE + 2, _table, WHERE, WHERE, DELETE_STATE + 3);
+    mark_cell(DELETE_STATE + 2, _table, WHERE, WHERE, WHERE_STATE);
 
-    //  PROC: This is a WHERE STATE. We are looking for a symbol
-    mark_cell(DELETE_STATE + 3, _table, SYMBOL, SYMBOL, SELECT_STATE + 4);
-    mark_cell(DELETE_STATE + 3, _table, OPEN_PARENTHESES, OPEN_PARENTHESES, DELETE_STATE + 5);
-
-    mark_cell(DELETE_STATE + 5, _table, SYMBOL, SYMBOL, DELETE_STATE + 6);
-
-    mark_cell(DELETE_STATE + 6, _table, OPERATION, OPERATION, DELETE_STATE + 7);
-
-    mark_cell(DELETE_STATE + 7, _table, SYMBOL, SYMBOL, SELECT_STATE + 8);
-    mark_cell(DELETE_STATE + 8, _table, QUOTATIONS, QUOTATIONS, DELETE_STATE + 9);
-
-    mark_cell(DELETE_STATE + 9, _table, SYMBOL, SYMBOL, DELETE_STATE + 10);
-
-    mark_cell(DELETE_STATE + 10, _table, SYMBOL, SYMBOL, DELETE_STATE + 10);
-    mark_cell(DELETE_STATE + 10, _table, QUOTATIONS, QUOTATIONS, DELETE_STATE + 11);
-
-    mark_state(_table, DELETE_STATE + 11, true);
-    mark_cell(DELETE_STATE + 11, _table, CLOSED_PARENTHESES, CLOSED_PARENTHESES, DELETE_STATE + 12);
-    mark_cell(DELETE_STATE + 11, _table, AND, AND, DELETE_STATE + 13);
-    mark_cell(DELETE_STATE + 11, _table, OR, OR, DELETE_STATE + 13);
-
-    mark_state(_table, DELETE_STATE + 12, true);
-    mark_cell(DELETE_STATE + 12, _table, AND, AND, DELETE_STATE + 13);
-    mark_cell(DELETE_STATE + 12, _table, OR, OR, DELETE_STATE + 13);
-
-    mark_cell(DELETE_STATE + 13, _table, SYMBOL, SYMBOL, DELETE_STATE + 7);
-    mark_cell(DELETE_STATE + 13, _table, OPEN_PARENTHESES, OPEN_PARENTHESES, DELETE_STATE + 6);
-
-    mark_state(_table, DELETE_STATE + 14, true);
-    mark_cell(DELETE_STATE + 14, _table, AND, AND, DELETE_STATE + 13);
-    mark_cell(DELETE_STATE + 14, _table, OR, OR, DELETE_STATE + 13);
-    mark_cell(DELETE_STATE + 14, _table, CLOSED_PARENTHESES, CLOSED_PARENTHESES, DELETE_STATE + 15);
-
-    mark_state(_table, DELETE_STATE + 15, true);
-    mark_cell(DELETE_STATE + 15, _table, AND, AND, DELETE_STATE + 13);
-    mark_cell(DELETE_STATE + 15, _table, OR, OR, DELETE_STATE + 13);
 
 
 
