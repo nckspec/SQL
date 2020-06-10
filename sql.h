@@ -134,8 +134,19 @@ SQL::SQL()
 
     }
 
-    //  PROC: Get all of the records from 'tables'
-    records = tables["tables"].get_records();
+    try {
+
+        //  PROC: Get all of the records from 'tables'
+        records = tables["tables"].get_records();
+
+
+    } catch (string str) {
+
+
+
+    }
+
+
 
     //  PROC: Loop through each record from the table 'tables' which holds all
     //  of the names of the table for the database
@@ -243,10 +254,14 @@ void SQL::run_command(string input)
         }
 
 
-        command = parse_tree["command"].to_vector().at(0);
+        if(parse_tree.contains("command"))
+        {
+            command = parse_tree["command"].to_vector().at(0);
 
-        //  PROC: Make sure that the parse_tree only has 1 command and 1 table
-        assert(parse_tree["command"].to_vector().size() == 1);
+            //  PROC: Make sure that the parse_tree only has 1 command and 1 table
+            assert(parse_tree["command"].to_vector().size() == 1);
+        }
+
 
 
         if(parse_tree.contains("fields"))
@@ -363,6 +378,26 @@ void SQL::run_command(string input)
                 cout << "Could not run batch file!\nError: " << exc << endl;
 
             }
+
+        }
+
+        if(command == "drop table")
+        {
+
+
+            cout << "\n\nTable: " << table << " has been dropped.\n\n";
+
+            Vector<long> record_nums = tables["tables"].select_conditions({"name=" + table});
+
+
+
+            if(record_nums.size() > 0)
+            {
+                tables["tables"].drop_record(record_nums.at(0));
+            }
+
+            tables[table] = Table();
+
 
         }
 

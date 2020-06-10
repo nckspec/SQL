@@ -219,7 +219,17 @@ Vector<Record> Table::get_records()
     //  object and then insert the record into the vector
     for(unsigned int i = 0; i < record_nums.size(); i++)
     {
-        records.push_back(get_record(record_nums.at(i)));
+        try {
+
+            records.push_back(get_record(record_nums.at(i)));
+
+        } catch (string str) {
+
+            cout << str << endl;
+
+        }
+
+
 
     }
 
@@ -1121,8 +1131,8 @@ Table Table::select(Parser parser)
 string Table::select_all()
 {
 
-    stringstream output;      //  OUTPUT: The string that will hold all of the records
-                        //  of the table; formatted
+    stringstream output;  //  OUTPUT: The string that will hold all of the records
+                          //  of the table; formatted
 
     Vector<string> fields;
 

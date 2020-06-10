@@ -407,6 +407,22 @@ void Parser::parse()
 
             case DROP_STATE:
                 temp_parse_tree["command"] += token.token_str();
+                it = temp_parse_tree["command"].begin();
+                break;
+
+            case DROP_STATE + 1:
+                //  PROC: If symbol has already been placed into the parse
+                //  tree, then we append it to that element's string
+                //  (We do this because we do not want the bplustree to sort
+                //  the fields. we need them in order received). We only
+                //  maintain one element in the values of the map and we
+                //  append to it
+                if(temp_parse_tree.contains("command"))
+                {
+
+                    (*it).append(" " + remove_quotations(token.token_str()));
+                }
+
                 break;
 
 

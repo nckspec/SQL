@@ -131,7 +131,7 @@ void setup_field_map(Vector<string> field_names)
 
     if(SQL_DEBUG)
     {
-        cout << "\n\end of setup_field_map(Vector<string> field_names)\n";
+        cout << "\n\nend of setup_field_map(Vector<string> field_names)\n";
         cout << "field_map: \n" << field_map << endl << endl;
 
         for(unsigned int i = 0; i < value_map.size(); i++)
@@ -268,28 +268,26 @@ void test_parser()
     }
 
 
-
-
 }
 
 
 int main()
 {
-//    SQL *s;
+    SQL *s;
 
-//    s = new SQL;
+    s = new SQL;
 
 
 
-//    s->run();
+    s->run();
 
-//    delete s;
+    delete s;
 
 //    test_table();
 
 //    test_finding_conditions();
 
-    test_parser();
+//    test_parser();
 
 
 
