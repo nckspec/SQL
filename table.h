@@ -719,8 +719,11 @@ bool Table::drop_record(long record_num)
     //  PROC: Opened the sql file for the table
     open_fileRW(outs, file_name);
 
-    //  PROC: Drop the record
-    if(rec.mark_dropped(outs, record_num))
+    //  PROC: Read the record wer are trying to drop
+    rec.read(outs, record_num);
+
+    //  PROC: Drop the record if it has not been dropped
+    if(!rec.is_deleted() && rec.mark_dropped(outs, record_num))
     {
         //  PROC: Close the file
         outs.close();
@@ -778,7 +781,7 @@ void Table::drop_records(Vector<long> record_nums)
     {
         if(drop_record(record_nums.at(i)))
         {
-            cout << "\n\nRecord #" << record_nums.at(i) << " dropped!\n\n";
+            cout << "\n\nRecord dropped!\n\n";
         }
     }
 
