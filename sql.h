@@ -9,11 +9,7 @@
 #include <algorithm>
 
 
-//  BUGS:
-//  If you don't put an end quote when, the program will enter an endless loop
-//  ex. batch "file name.txt
-//  FIX: Update the tokenizer so that it updates _pos even if it did not
-//  get a successful token
+
 
 
 using namespace std;
@@ -111,6 +107,11 @@ SQL::SQL()
     //  PROC: Either open or create tables.sql
     try
     {
+        if(DEBUG)
+        {
+            cout << "\n\nOpening tables.sql\n\n";
+        }
+
         //  PROC: Try to open tables.sql. If it can be opened, store it in
         //  the tables map
         Table table(table_name);
@@ -119,6 +120,12 @@ SQL::SQL()
     } catch (string str)
     {
         cout << str << endl;
+
+
+        if(DEBUG)
+        {
+            cout << "\n\nCreating tables.sql\n\n";
+        }
 
         //  PROC: Since the tables.sql does not exist. Create it with the field
         //  'name' that will hold the name of all tables
@@ -134,6 +141,12 @@ SQL::SQL()
     //  of the names of the table for the database
     for(unsigned int i = 0; i < records.size(); i++)
     {
+        if(DEBUG)
+        {
+            cout << "\n\nRecord: " << records.at(i).get_fields() << endl;
+
+        }
+
         //  PROC: Get the 1st field 'name' from the record and call load_table
         //  with the name
         load_table(records.at(i).get_fields().at(0));
@@ -413,6 +426,8 @@ void SQL::run()
         {
             run_batch_file("test.txt");
         }
+
+
 
 
 

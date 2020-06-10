@@ -14,9 +14,18 @@ const bool SQL_DEBUG = false;
 
 #include <cstdlib>
 
-//  TODO: Modify string_to_vector so that it doesn't separate numbers from
-//  words
-//
+/*
+  TODO: Modify string_to_vector so that it doesn't separate numbers from
+  words
+
+  - Table()::get_records() returns a vector of records and could possibly crash
+  the program if it is used on a massive table. It would be better if only one
+  record was retreived at one time. This is only used when opening the tables.sql
+  table that holds all of the tables, so it is unlikely that there would be many
+  records in that
+
+*/
+
 
 /*
  *
@@ -29,6 +38,17 @@ const bool SQL_DEBUG = false;
  *
  *
  */
+
+//  BUGS:
+//  If you don't put an end quote when, the program will enter an endless loop
+//  ex. batch "file name.txt
+//  FIX: Update the tokenizer so that it updates _pos even if it did not
+//  get a successful token
+//
+
+//  - If you do not close a parenthesis in your conditions, then the program
+//  will crash. If you put a closed parenthesis without open, the program will
+//  crash
 
 Vector<mmap<string, long > > value_map;
 
@@ -227,17 +247,17 @@ void test_parser()
 
 int main()
 {
-//    SQL *s;
+    SQL *s;
 
-//    s = new SQL;
+    s = new SQL;
 
 
 
-//    s->run();
+    s->run();
 
-//    delete s;
+    delete s;
 
-    test_finding_conditions();
+//    test_finding_conditions();
 
 
 

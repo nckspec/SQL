@@ -215,7 +215,7 @@ Vector<Record> Table::get_records()
     //  PROC: Loop through each record number in the record_nums array.
     //  Create a record, insert the record from the database into the record
     //  object and then insert the record into the vector
-    for(unsigned int i = 1; i < record_nums.size(); i++)
+    for(unsigned int i = 0; i < record_nums.size(); i++)
     {
         records.push_back(get_record(record_nums.at(i)));
 
