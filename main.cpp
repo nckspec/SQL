@@ -81,8 +81,6 @@ void test_table()
 
     cout << table.select_all() << endl;
 
-
-
 }
 
 void insert_field_map(string field, string value, long record_num)
@@ -246,7 +244,7 @@ void test_finding_conditions()
 void test_parser()
 {
 
-//    Vector<string> tests;
+    Vector<string> tests;
 
 //    tests.push_back("batch woah.txt");
 //    tests.push_back("batch \"this is a test.txt\"");
@@ -255,21 +253,21 @@ void test_parser()
 
 //    tests.push_back("batch test");
 
-//    tests.push_back("batch this is a test.txt");
+    tests.push_back("drop table name");
 
 
-//    for(unsigned int i = 0; i < tests.size(); i++)
-//    {
-//        Parser p(tests.at(i));
+    for(unsigned int i = 0; i < tests.size(); i++)
+    {
+        Parser p(tests.at(i));
 
-//        p.parse();
+        p.parse();
 
-//        mmap<string, string> parse_tree = p.get_parse_table();
+        mmap<string, string> parse_tree = p.get_parse_table();
 
-//        cout << parse_tree << endl;
-//    }
+        cout << parse_tree << endl;
+    }
 
-//    test_table();
+
 
 
 }
@@ -287,9 +285,11 @@ int main()
 
 //    delete s;
 
-    test_table();
+//    test_table();
 
 //    test_finding_conditions();
+
+    test_parser();
 
 
 

@@ -8,13 +8,13 @@
 
 //  PROC: The AND must come after the OR for the order of operations to be correct
 //  (for precedence)
-enum keys {START = 1, SELECT, INSERT, MAKE, CREATE, BATCH, FIELDS, TABLE,  WHERE, TYPE, ALL, FROM, ALPHA,
+enum keys {START = 1, SELECT, INSERT, MAKE, CREATE, BATCH, DROP, FIELDS, TABLE,  WHERE, TYPE, ALL, FROM, ALPHA,
            ASTERISK, SYMBOL, COMMA, OPERATION, VALUES, INTO, QUOTATIONS,
            OPEN_PARENTHESES, CLOSED_PARENTHESES, OR, AND};
 
 
 
-enum states {SELECT_STATE = 30, INSERT_STATE = 50, MAKE_TABLE_STATE = 70, BATCH_STATE = 90};
+enum states {SELECT_STATE = 30, INSERT_STATE = 50, MAKE_TABLE_STATE = 70, BATCH_STATE = 90, DROP_STATE = 95};
 
 const bool P_DEBUG = false;
 
@@ -403,7 +403,24 @@ void Parser::parse()
                }
                break;
 
+
+
+            case DROP_STATE:
+                temp_parse_tree["command"] += token.token_str();
+                break;
+
+
+            case DROP_STATE + 2:
+                temp_parse_tree["table"] += token.token_str();
+                break;
+
+
+
             }
+
+
+
+
 
 
 
@@ -477,6 +494,8 @@ void Parser::create_token_map()
 
     token_map["batch"] = BATCH;
 
+    token_map["drop"] = DROP;
+
 
 }
 
@@ -516,6 +535,7 @@ void Parser::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     mark_cell(START_STATE, _table, MAKE, MAKE, MAKE_TABLE_STATE);
     mark_cell(START_STATE, _table, CREATE, CREATE, MAKE_TABLE_STATE);
     mark_cell(START_STATE, _table, BATCH, BATCH, BATCH_STATE);
+    mark_cell(START_STATE, _table, DROP, DROP, DROP_STATE);
 
 
 
@@ -625,6 +645,13 @@ void Parser::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     mark_cell(BATCH_STATE, _table, SYMBOL, SYMBOL, BATCH_STATE + 1);
     mark_cell(BATCH_STATE + 1, _table, SYMBOL, SYMBOL, BATCH_STATE + 1);
     mark_state(_table, BATCH_STATE + 1, true);
+
+    //  PROC: DROP TABLE COMMAND
+    mark_cell(DROP_STATE, _table, TABLE, TABLE, DROP_STATE + 1);
+    mark_cell(DROP_STATE + 1, _table, SYMBOL, SYMBOL, DROP_STATE + 2);
+    mark_state(_table, DROP_STATE + 2, true);
+
+
 
 
 
