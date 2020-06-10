@@ -21,11 +21,14 @@ public:
 
     SQL();
     void run();
-    void run_command(string command);
+    bool run_command(string command);
 
     ~SQL() {
         remove_temp_files();
     }
+
+    unsigned int get_commands_run();
+    void set_commands_run(unsigned int commands_run);
 
 
 private:
@@ -36,10 +39,12 @@ private:
 
     bool make_table(string table_name, Vector<string> table_fields);
 
-    const bool DEBUG = false;
+    const bool DEBUG = true;
 
     void remove_temp_files();
     void run_batch_file(string file_name);
+
+    unsigned int commands_run;
 
 
 
@@ -104,6 +109,8 @@ SQL::SQL()
     Vector<Record> records;
     string table_name = "tables";
 
+    commands_run = 0;
+
     //  PROC: Either open or create tables.sql
     try
     {
@@ -165,6 +172,16 @@ SQL::SQL()
 
 }
 
+unsigned int SQL::get_commands_run()
+{
+    return commands_run;
+}
+
+void SQL::set_commands_run(unsigned int commands_run)
+{
+    this->commands_run = commands_run;;
+}
+
 void SQL::run_batch_file(string file_name)
 {
 
@@ -198,9 +215,17 @@ void SQL::run_batch_file(string file_name)
             line.erase(std::remove(line.begin(), line.end(), '\t'), line.end());
 
 
-            cout << line << endl;
+            if(run_command(line))
+            {
+                set_commands_run(get_commands_run() + 1);
+                cout << "[" << get_commands_run() << "] " << line << endl;
+            }
 
-            run_command(line);
+            else
+            {
+                cout << line << endl;
+            }
+
 
         }
 
@@ -220,7 +245,7 @@ void SQL::run_batch_file(string file_name)
 
 }
 
-void SQL::run_command(string input)
+bool SQL::run_command(string input)
 {
 
 
@@ -410,7 +435,17 @@ void SQL::run_command(string input)
 
         }
 
+
+        return true;
+
     }
+
+    else
+    {
+        return false;
+    }
+
+
 
 
 

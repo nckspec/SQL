@@ -9,7 +9,7 @@
 #include "array_functions.h"
 #include <iomanip>
 
-const bool MMAP_DEBUG = false;
+bool MMAP_DEBUG = false;
 
 
 

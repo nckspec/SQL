@@ -16,7 +16,7 @@ enum keys {START = 1, SELECT, INSERT, MAKE, CREATE, BATCH, DROP, FIELDS, TABLE, 
 
 enum states {SELECT_STATE = 30, INSERT_STATE = 50, MAKE_TABLE_STATE = 70, BATCH_STATE = 90, DROP_STATE = 95};
 
-const bool P_DEBUG = false;
+const bool P_DEBUG = true;
 
 class Parser
 {
