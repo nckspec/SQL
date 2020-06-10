@@ -55,9 +55,9 @@ private:
 
     Condition calculate(Condition &left, Condition &right, string operation);
 
+    bool is_parenthesis(string str);
 
-
-    const bool DEBUG = false;
+    const bool DEBUG = true;
 
 };
 
@@ -306,17 +306,55 @@ Vector<string> Shaunting_Yard::get_postfix()
                 operator_stack.push(element);
             }
 
-            //  PROC: If the stack is empty, then push the operator into it
-            else if(operator_stack.empty())
+            //  PROC: If the stack is empty, or there is an open parentheses,
+            //  then push the operator into it
+            else if(operator_stack.empty() || operator_stack.top() == "(")
             {
 
                 operator_stack.push(element);
             }
 
+
+
             else {
                 assert(0);
             }
 
+        }
+
+        //   PROC: If the element is a parenthesis, then need to perform
+        //   different operations
+        else if(is_parenthesis(element))
+        {
+            //  PROC: If the element is an open parenthesis, push it to the
+            //  stack
+            if(element == "(")
+            {
+                operator_stack.push(element);
+            }
+
+            //  PROC: If the operator is a closed parentheses, then we pop the
+            //  stack, adding each operator to the postfix vector until we see
+            //  the open parenthesis
+            else if(element == ")")
+            {
+                //  PROC: Continue looping until we reach the open parenthesis
+                //  In each loop, pop the operator_stack and push to the
+                //  postfix
+                while(operator_stack.top() != "(")
+                {
+                    postfix.push_back(operator_stack.pop());
+                }
+
+                //  PROC: Pop the open parenthesis, but dont add it to any stack
+                operator_stack.pop();
+
+            }
+
+            else
+            {
+                assert(0);
+            }
         }
 
         //  PROC: If the element is not an operator, then we assume it is a number
@@ -354,6 +392,25 @@ bool Shaunting_Yard::is_operator(string str)
     }
 
     if(operator_map.contains(str))
+    {
+        return true;
+    }
+
+    else
+    {
+        return false;
+    }
+}
+
+bool Shaunting_Yard::is_parenthesis(string str)
+{
+    if(DEBUG)
+    {
+        cout << "\n\nCalling is_parenthesis(string str)\n\n";
+
+    }
+
+    if(str == "(" || str == ")")
     {
         return true;
     }

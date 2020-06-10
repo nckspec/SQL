@@ -260,6 +260,9 @@ void Condition::convert_string(string condition)
         cout << "condition_list size: " << condition_list.size() << endl;
     }
 
+    //  PROC: The condition must be equal to 3 (field, operator, value)
+    assert(condition_list.size() == 3);
+
     //  PROC: Assert that the condition is an equal sign and assert
     //  that the size of the vector is 3 because there will be 3 tokens
     //  the field, the operator, and the value (ex. last = Harris )
