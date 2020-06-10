@@ -27,8 +27,7 @@ public:
         remove_temp_files();
     }
 
-    unsigned int get_commands_run();
-    void set_commands_run(unsigned int commands_run);
+
 
 
 private:
@@ -39,10 +38,16 @@ private:
 
     bool make_table(string table_name, Vector<string> table_fields);
 
-    const bool DEBUG = true;
+    const bool DEBUG = false;
 
     void remove_temp_files();
     void run_batch_file(string file_name);
+
+    unsigned int get_commands_run();
+    void set_commands_run(unsigned int commands_run);
+
+
+    bool is_command_valid(string command) const;
 
     unsigned int commands_run;
 
@@ -182,6 +187,28 @@ void SQL::set_commands_run(unsigned int commands_run)
     this->commands_run = commands_run;;
 }
 
+
+bool SQL::is_command_valid(string command) const
+{
+    Parser p(command);
+
+
+    p.parse();
+
+    //  PROC: IF the parse table is not empty return true. if it is empty,
+    //  return false (since the parse_table will only have something in it
+    //  if a valid command was run
+    if(!p.get_parse_table().empty())
+    {
+        return true;
+    }
+
+    else
+    {
+        return false;
+    }
+}
+
 void SQL::run_batch_file(string file_name)
 {
 
@@ -215,10 +242,11 @@ void SQL::run_batch_file(string file_name)
             line.erase(std::remove(line.begin(), line.end(), '\t'), line.end());
 
 
-            if(run_command(line))
+            if(is_command_valid(line))
             {
                 set_commands_run(get_commands_run() + 1);
                 cout << "[" << get_commands_run() << "] " << line << endl;
+                run_command(line);
             }
 
             else
