@@ -57,7 +57,7 @@ private:
 
     bool is_parenthesis(string str);
 
-    const bool DEBUG = true;
+    const bool DEBUG = false;
 
 };
 
@@ -245,66 +245,70 @@ Vector<string> Shaunting_Yard::get_postfix()
 
             }
 
-
-            //  PROC: Check if the current element is greater in precedenece
-            //  than the element at the top of the stack in the operator_stack
-            if(operator_map[element] > operator_map[operator_stack.top()])
+            //  PROC: If the item at the top of the stack is an operator
+            if(is_operator(operator_stack.top()))
             {
-                if(DEBUG)
+                //  PROC: Check if the current element is greater in precedenece
+                //  than the element at the top of the stack in the operator_stack
+                if(operator_map[element] > operator_map[operator_stack.top()])
                 {
-                    cout << "\n\nCurrent operator is greater than the one"
-                            " on top of stack\n\n";
-                    cout << "element: " << element << endl;
-                }
-                //  PROC: Push the element to the top of the operator stack
-                operator_stack.push(element);
-            }
-
-            //  PROC: Check if the current element is lesser in precedenece
-            //  than the element at the top of the stack in the operator_stack
-            else if(operator_map[element] < operator_map[operator_stack.top()])
-            {
-                if(DEBUG)
-                {
-                    cout << "\n\nCurrent operator is less than the one"
-                            " on top of stack\n\n";
-                    cout << "element: " << element << endl;
+                    if(DEBUG)
+                    {
+                        cout << "\n\nCurrent operator is greater than the one"
+                                " on top of stack\n\n";
+                        cout << "element: " << element << endl;
+                    }
+                    //  PROC: Push the element to the top of the operator stack
+                    operator_stack.push(element);
                 }
 
-                //  PROC: While the current element is less than or equal to
-                //  the top of the stack, pop the top of the stack and insert
-                //  into the postfix vector
-                while(operator_map[element] <= operator_map[operator_stack.top()])
+                //  PROC: Check if the current element is lesser in precedenece
+                //  than the element at the top of the stack in the operator_stack
+                else if(operator_map[element] < operator_map[operator_stack.top()])
                 {
+                    if(DEBUG)
+                    {
+                        cout << "\n\nCurrent operator is less than the one"
+                                " on top of stack\n\n";
+                        cout << "element: " << element << endl;
+                    }
+
+                    //  PROC: While the current element is less than or equal to
+                    //  the top of the stack, pop the top of the stack and insert
+                    //  into the postfix vector
+                    while(operator_map[element] <= operator_map[operator_stack.top()])
+                    {
+                        //  PROC: Pop the operator from the operator_stack and push it into
+                        //  the postfix vector
+                        postfix.push_back(operator_stack.pop());
+                    }
+
+
+                    //  PROC: Now push the new element into the operator stack
+                    operator_stack.push(element);
+                }
+
+                //  PROC: If the element is equal to the operator at the top of the
+                //  stack in precedence, then pop stack element into postfix vector
+                //  and then insert new operator into operator stack
+                else if(operator_map[element] == operator_map[operator_stack.top()])
+                {
+                    if(DEBUG)
+                    {
+                        cout << "\n\nCurrent operator is equal to the one"
+                                " on top of stack\n\n";
+                        cout << "element: " << element << endl;
+                    }
+
                     //  PROC: Pop the operator from the operator_stack and push it into
                     //  the postfix vector
                     postfix.push_back(operator_stack.pop());
+
+                    //  PROC: Now push the new element into the operator stack
+                    operator_stack.push(element);
                 }
-
-
-                //  PROC: Now push the new element into the operator stack
-                operator_stack.push(element);
             }
 
-            //  PROC: If the element is equal to the operator at the top of the
-            //  stack in precedence, then pop stack element into postfix vector
-            //  and then insert new operator into operator stack
-            else if(operator_map[element] == operator_map[operator_stack.top()])
-            {
-                if(DEBUG)
-                {
-                    cout << "\n\nCurrent operator is equal to the one"
-                            " on top of stack\n\n";
-                    cout << "element: " << element << endl;
-                }
-
-                //  PROC: Pop the operator from the operator_stack and push it into
-                //  the postfix vector
-                postfix.push_back(operator_stack.pop());
-
-                //  PROC: Now push the new element into the operator stack
-                operator_stack.push(element);
-            }
 
             //  PROC: If the stack is empty, or there is an open parentheses,
             //  then push the operator into it
