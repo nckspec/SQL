@@ -279,7 +279,11 @@ Record Table::get_record(long record_num)
         cout << "record_num: " << record_num << endl << endl;
     }
 
-    assert(record_num <= record_nums.back());
+    if(!record_nums.empty())
+    {
+        assert(record_num <= record_nums.back());
+    }
+
 
     //  PROC: Check that the file exists
     if(file_exists(file_name))
@@ -1221,6 +1225,8 @@ Table Table::select(Parser parser)
             table.insert(get_record(record_nums.at(i)).get_fields(field_nums));
 
         } catch (string str) {
+
+            cout << str << endl;
 
         }
 
