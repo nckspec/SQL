@@ -8,7 +8,7 @@ const int MAX_COLUMNS = 500;
 const int MAX_ROWS = 500;
 const int MAX_BUFFER = 200;
 
-const bool TOKEN_DEBUG = false;
+const bool TOKEN_DEBUG = true;
 
 class STokenizer
 {
@@ -65,7 +65,7 @@ private:
     bool _done;                     //  Keeps track of whether there are more
                                     //  tokens to extract or not
 
-    bool DEBUG = true;
+    bool DEBUG = false;
 };
 
 
@@ -276,20 +276,14 @@ void STokenizer::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     //  PROC: this will allow the tokenizer to identify a string of words
     //  surrounded by '' as a token
     mark_cell(START_STATE, _table, '\'', '\'', APOSTROPHE_STATE);
-    mark_cell(APOSTROPHE_STATE, _table, 'a', 'z', APOSTROPHE_STATE);
-    mark_cell(APOSTROPHE_STATE, _table, 'A', 'Z', APOSTROPHE_STATE);
-    mark_cell(APOSTROPHE_STATE, _table, '0', '9', APOSTROPHE_STATE);
-    mark_cell(APOSTROPHE_STATE, _table, ' ', ' ', APOSTROPHE_STATE);
+    mark_cell(APOSTROPHE_STATE, _table, ' ', '~', APOSTROPHE_STATE);
     mark_cell(APOSTROPHE_STATE, _table, '\'', '\'', APOSTROPHE_STATE + 1);
     mark_state(_table, APOSTROPHE_STATE + 1, true);
 
     //  PROC: this will allow the tokenizer to identify a string of words
     //  surrounded by "" quotation marks as a token
     mark_cell(START_STATE, _table, '\"', '\"', QUOTATION_STATE);
-    mark_cell(QUOTATION_STATE, _table, 'a', 'z', QUOTATION_STATE);
-    mark_cell(QUOTATION_STATE, _table, 'A', 'Z', QUOTATION_STATE);
-    mark_cell(QUOTATION_STATE, _table, '0', '9', QUOTATION_STATE);
-    mark_cell(QUOTATION_STATE, _table, ' ', ' ', QUOTATION_STATE);
+    mark_cell(QUOTATION_STATE, _table, ' ', '~', QUOTATION_STATE);
     mark_cell(QUOTATION_STATE, _table, '\"', '\"', QUOTATION_STATE + 1);
     mark_state(_table, QUOTATION_STATE + 1, true);
 
@@ -449,6 +443,12 @@ bool STokenizer::get_token(string& token, int &endState)
     {
 
         //    assert(_buffer[_pos - 1] != '\0');
+
+            if(TOKEN_DEBUG)
+            {
+                cout << "\n\ncalled get_token(): STokenizer\n\n";
+                cout << "token: " << token << endl;
+            }
 
             //  CALC: Holds the current token
             string tempToken = "";

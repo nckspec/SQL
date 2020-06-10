@@ -9,6 +9,12 @@
 #include <algorithm>
 
 
+//  BUGS:
+//  If you don't put an end quote when, the program will enter an endless loop
+//  ex. batch "file name.txt
+//  FIX: Update the tokenizer so that it updates _pos even if it did not
+//  get a successful token
+
 
 using namespace std;
 

@@ -29,25 +29,48 @@ using namespace std;
  */
 
 
+
+void test_parser()
+{
+
+    Vector<string> tests;
+
+    tests.push_back("batch woah.txt");
+    tests.push_back("batch \"this is a test.txt\"");
+    tests.push_back("batch \"_!select (2).text\"");
+    tests.push_back("batch \"_!select.txt\"");
+
+    tests.push_back("batch this is a test.txt");
+
+
+    for(unsigned int i = 0; i < tests.size(); i++)
+    {
+        Parser p(tests.at(i));
+
+        p.parse();
+
+        mmap<string, string> parse_tree = p.get_parse_table();
+
+        cout << parse_tree << endl;
+    }
+
+
+}
+
+
 int main()
 {
-    SQL *s;
+//    SQL *s;
 
-    s = new SQL;
+//    s = new SQL;
 
 
 
-    s->run();
+//    s->run();
 
-    delete s;
+//    delete s;
 
-//    Condition c({1, 3, 4, 5, 6, 10, 11, 12});
-
-//    Condition d({1, 2, 5, 8, 10, 12});
-
-//    Condition e = c && d;
-
-//    cout << e.get_record_nums().to_string() << endl;
+    test_parser();
 
 
 

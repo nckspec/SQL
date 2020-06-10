@@ -8,13 +8,13 @@
 
 //  PROC: The AND must come after the OR for the order of operations to be correct
 //  (for precedence)
-enum keys {START = 1, SELECT, INSERT, MAKE, CREATE, FIELDS, TABLE,  WHERE, TYPE, ALL, FROM, ALPHA,
+enum keys {START = 1, SELECT, INSERT, MAKE, CREATE, BATCH, FIELDS, TABLE,  WHERE, TYPE, ALL, FROM, ALPHA,
            ASTERISK, SYMBOL, COMMA, OPERATION, VALUES, INTO, QUOTATIONS,
            OPEN_PARENTHESES, CLOSED_PARENTHESES, OR, AND};
 
 
 
-enum states {SELECT_STATE = 30, INSERT_STATE = 50, MAKE_TABLE_STATE = 70};
+enum states {SELECT_STATE = 30, INSERT_STATE = 50, MAKE_TABLE_STATE = 70, BATCH_STATE = 90};
 
 const bool P_DEBUG = false;
 
@@ -374,7 +374,38 @@ void Parser::parse()
                 }
                 break;
 
+
+            case BATCH_STATE:
+                temp_parse_tree["command"] += token.token_str();
+                break;
+
+
+            case BATCH_STATE + 1:
+               //  PROC: If symbol has already been placed into the parse
+               //  tree, then we append it to that element's string
+               //  (We do this because we do not want the bplustree to sort
+               //  the fields. we need them in order received). We only
+               //  maintain one element in the values of the map and we
+               //  append to it
+               if(temp_parse_tree.contains("filename"))
+               {
+
+                   (*it).append(remove_quotations(token.token_str()));
+               }
+
+               //  PROC: If no symbol has been appended yet. Add the token
+               //  to the multimap and then create an iterator that points to
+               //  it so that we can append if we receive another value
+               else
+               {
+                   temp_parse_tree["filename"] += remove_quotations(token.token_str());
+                   it = temp_parse_tree["filename"].begin();
+               }
+               break;
+
             }
+
+
 
 
 
@@ -443,6 +474,10 @@ void Parser::create_token_map()
     token_map["table"] = TABLE;
     token_map["fields"] = FIELDS;
 
+
+    token_map["batch"] = BATCH;
+
+
 }
 
 /**********************************************************
@@ -480,6 +515,7 @@ void Parser::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     mark_cell(START_STATE, _table, INSERT, INSERT, INSERT_STATE);
     mark_cell(START_STATE, _table, MAKE, MAKE, MAKE_TABLE_STATE);
     mark_cell(START_STATE, _table, CREATE, CREATE, MAKE_TABLE_STATE);
+    mark_cell(START_STATE, _table, BATCH, BATCH, BATCH_STATE);
 
 
 
@@ -585,6 +621,10 @@ void Parser::make_table(int _table[MAX_ROWS][MAX_COLUMNS])
     mark_cell(MAKE_TABLE_STATE + 5, _table, SYMBOL, SYMBOL, MAKE_TABLE_STATE + 4);
 
 
+    //  PROC: BATCH COMMAND
+    mark_cell(BATCH_STATE, _table, SYMBOL, SYMBOL, BATCH_STATE + 1);
+    mark_cell(BATCH_STATE + 1, _table, SYMBOL, SYMBOL, BATCH_STATE + 1);
+    mark_state(_table, BATCH_STATE + 1, true);
 
 
 
@@ -680,11 +720,14 @@ string Parser::remove_quotations(string str)
 {
     //  PROC: Remove the quotation marks at the beginning and the end of the
     //  string
-    if(str.at(0) == '\"' && str.at(str.size() - 1) == '\"')
-    {
-        str.erase(str.begin());
-        str.erase(str.end() - 1);
-    }
+//    if(str.at(0) == '\"' && str.at(str.size() - 1) == '\"')
+//    {
+//        str.erase(str.begin());
+//        str.erase(str.end() - 1);
+//    }
+
+    //  PROC: Removes all quotation marks from string
+    str.erase(std::remove(str.begin(), str.end(), '\"'), str.end());
 
     return str;
 }
