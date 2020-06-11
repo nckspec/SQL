@@ -41,7 +41,7 @@ const int FILE_NAME_SIZE = 20;
 const int RECORD_SIZE = 30;
 const int MAX_FIELDS = 10;
 const bool TABLE_DEBUG = false;
-const int NUM_PADDING_SIZE = 4;
+const int NUM_PADDING_SIZE = 8;
 
 class Table
 {
