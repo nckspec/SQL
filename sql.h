@@ -96,6 +96,10 @@ bool SQL::make_table(string table_name, Vector<string> table_fields)
         tables[table_name] = Table(table_name, table_fields);
 
 
+        //  PROC: Write the table name to the table that holds all of the
+        //  table names (table.sql)
+        tables["tables"].insert({table_name});
+
         return true;
 
     }
