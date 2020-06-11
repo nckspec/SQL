@@ -21,13 +21,15 @@ public:
 
     SQL();
     void run();
-    void run_command(string command);
+    bool run_command(string command);
 
     ~SQL() {
         remove_temp_files();
     }
 
     bool table_exists(string name);
+
+
 
 
 private:
@@ -42,6 +44,14 @@ private:
 
     void remove_temp_files();
     void run_batch_file(string file_name);
+
+    unsigned int get_commands_run();
+    void set_commands_run(unsigned int commands_run);
+
+
+    bool is_command_valid(string command) const;
+
+    unsigned int commands_run;
 
 
 
@@ -121,6 +131,8 @@ SQL::SQL()
     Vector<Record> records;
     string table_name = "tables";
 
+    commands_run = 0;
+
     //  PROC: Either open or create tables.sql
     try
     {
@@ -182,6 +194,38 @@ SQL::SQL()
 
 }
 
+unsigned int SQL::get_commands_run()
+{
+    return commands_run;
+}
+
+void SQL::set_commands_run(unsigned int commands_run)
+{
+    this->commands_run = commands_run;;
+}
+
+
+bool SQL::is_command_valid(string command) const
+{
+    Parser p(command);
+
+
+    p.parse();
+
+    //  PROC: IF the parse table is not empty return true. if it is empty,
+    //  return false (since the parse_table will only have something in it
+    //  if a valid command was run
+    if(!p.get_parse_table().empty())
+    {
+        return true;
+    }
+
+    else
+    {
+        return false;
+    }
+}
+
 void SQL::run_batch_file(string file_name)
 {
 
@@ -215,9 +259,18 @@ void SQL::run_batch_file(string file_name)
             line.erase(std::remove(line.begin(), line.end(), '\t'), line.end());
 
 
-            cout << line << endl;
+            if(is_command_valid(line))
+            {
+                set_commands_run(get_commands_run() + 1);
+                cout << "[" << get_commands_run() << "] " << line << endl;
+                run_command(line);
+            }
 
-            run_command(line);
+            else
+            {
+                cout << line << endl;
+            }
+
 
         }
 
@@ -237,7 +290,7 @@ void SQL::run_batch_file(string file_name)
 
 }
 
-void SQL::run_command(string input)
+bool SQL::run_command(string input)
 {
 
 
@@ -458,7 +511,17 @@ void SQL::run_command(string input)
 
         }
 
+
+        return true;
+
     }
+
+    else
+    {
+        return false;
+    }
+
+
 
 
 
