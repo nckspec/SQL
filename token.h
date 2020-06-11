@@ -5,6 +5,8 @@
 #include <iostream>     // std::cout, std::ostream, std::ios
 #include <fstream>      // std::filebuf
 #include <stdio.h>
+#include <string.h>
+#include <cassert>
 
 
 

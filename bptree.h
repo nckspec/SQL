@@ -3001,7 +3001,7 @@ void bptree<T>::erase(T item)
 }
 
 template <typename T>
-void remove_duplicates(vector<T> &v)
+void remove_duplicates(Vector<T> &v)
 {
     for(int i = 0; i < v.size(); i++)
     {
@@ -3016,7 +3016,7 @@ void remove_duplicates(vector<T> &v)
 }
 
 template <typename T>
-void vector_erase(vector<T> &v, T target)
+void vector_erase(Vector<T> &v, T target)
 {
     for(int i = 0; i < v.size(); i++)
     {
@@ -3031,7 +3031,7 @@ template <typename T>
 bool compare_tree_to_list(bptree<T> *tree, T entry, bool insert)
 {
     Vector<T> list;
-    static vector<T> checklist;
+    static Vector<T> checklist;
 
     list = tree->to_vector();
 

@@ -5,6 +5,7 @@
 #include "mmap.h"
 #include "map.h"
 #include "vector.h"
+#include <algorithm>
 
 //  PROC: The AND must come after the OR for the order of operations to be correct
 //  (for precedence)
