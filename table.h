@@ -85,12 +85,16 @@ public:
 
     void remove_temp_files();
 
+
+
     bool drop_record(long record_num);
 
     void drop_records(Vector<long> record_nums);
     void drop_records(mmap<string, string> &parse_table);
 
     string get_filename() const;
+
+    string get_name() const;
 
 
 
@@ -130,6 +134,12 @@ private:
 
 };
 
+
+string Table::get_name() const
+{
+    return name;
+}
+
 string Table::get_filename() const
 {
     return file_name;
@@ -142,6 +152,7 @@ void Table::erase()
 
 Table::Table()
 {
+    name = "NULL";
 
 }
 
@@ -888,7 +899,6 @@ void Table::remove_temp_files()
     //  PROC: Point to the first possible temp file that would exist
     strcpy(tempFileName, (name + to_string(index) + string(".sql")).c_str());
 
-    cout << "filename: " << tempFileName << endl;
 
     //  PROC: While temp files exist, go through each one removing the temp files
     while(file_exists(tempFileName))

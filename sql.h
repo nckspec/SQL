@@ -27,6 +27,8 @@ public:
         remove_temp_files();
     }
 
+    bool table_exists(string name);
+
 
 private:
 
@@ -46,6 +48,24 @@ private:
 
 };
 
+bool SQL::table_exists(string name)
+{
+
+    //  PROC: Check for the tables in the tables map, get its name. If it
+    //  is not equal to NULL then it is a valid table
+    if(tables[name].get_name() != "NULL")
+    {
+        return true;
+    }
+
+    else
+    {
+        return false;
+    }
+
+
+}
+
 void SQL::remove_temp_files()
 {
     for(map<string, Table>::Iterator it = tables.begin(); it != tables.end(); it++)
@@ -60,14 +80,11 @@ void SQL::remove_temp_files()
 bool SQL::make_table(string table_name, Vector<string> table_fields)
 {
     //  PROC: Check that the table does not already exist
-    if(!tables.contains(table_name))
+    if(!table_exists(table_name))
     {
-        tables.insert(table_name, Table(table_name, table_fields));
+        //  PROC: Insert the new table into the tables map
+        tables[table_name] = Table(table_name, table_fields);
 
-
-        //  PROC: Write the table name to the table that holds all of the
-        //  table names (table.sql)
-        tables["tables"].insert({table_name});
 
         return true;
 
@@ -298,7 +315,7 @@ void SQL::run_command(string input)
         if(command == "select")
         {
             //  PROC: Check that the table exists
-            if(tables.contains(table))
+            if(table_exists(table))
             {
                 try {
 
@@ -330,7 +347,7 @@ void SQL::run_command(string input)
         if(command == "insert")
         {
             //  PROC: Check that the table exists
-            if(tables.contains(table))
+            if(table_exists(table))
             {
                 //  PROC: Attempt to insert the new record into the table
                 try
@@ -339,10 +356,10 @@ void SQL::run_command(string input)
                     //  received is onyl going to be one element where all of
                     //  the values are separated by commas
                     tables[table].insert(string_to_vector(parse_tree["values"].to_vector().to_string()));
-//                    cout << tables[table] << endl;
+                    cout << "\n\nRecord inserted!\n\n";
                 }
 
-                catch (const char* msg)
+                catch (string msg)
                 {
                     cout << msg << endl;
                     cout << "insert into [table] values [value1,value2,value3]\n";
@@ -387,37 +404,55 @@ void SQL::run_command(string input)
         {
 
 
+            try {
 
-            //  PROC: Query the table 'tables.sql' for the record # of the record
-            //  in 'tables.sql' that holds the name of the table we are trying
-            //  to dlete
-            record_nums = tables["tables"].select_conditions({"name=" + table});
+                //  PROC: Query the table 'tables.sql' for the record # of the record
+                //  in 'tables.sql' that holds the name of the table we are trying
+                //  to dlete
+                record_nums = tables["tables"].select_conditions({"name=" + table});
 
 
-            //  PROC: If a record # was returned, then we delete the table
-            //  name from 'tables.sql' then we remove its temp files, then
-            //  we delete the database file itself
+                //  PROC: If a record # was returned, then we delete the table
+                //  name from 'tables.sql' then we remove its temp files, then
+                //  we delete the database file itself
 
-            tables["tables"].drop_records(record_nums);
-            tables[table].remove_temp_files();
-            remove(tables[table].get_filename().c_str());
+                tables["tables"].drop_records(record_nums);
+                tables[table].remove_temp_files();
+                remove(tables[table].get_filename().c_str());
 
                 cout << "\n\nTable: " << table << " has been dropped.\n\n";
 
 
-            //  PROC: Put a blank table into the tables map
-            tables[table] = Table();
+                //  PROC: Put a blank table into the tables map
+                tables[table] = Table();
+
+            } catch (string str) {
+
+                cout << str << endl;
+
+            }
+
+
 
 
         }
 
         if(command == "delete")
         {
-            //  PROC: If the table exists
-            if(tables.contains(table))
+            try
             {
-                //  PROC: Drop the records from the table
-                tables[table].drop_records(parse_tree);
+
+                //  PROC: If the table exists
+                if(table_exists(table))
+                {
+                    //  PROC: Drop the records from the table
+                    tables[table].drop_records(parse_tree);
+
+                }
+
+            } catch (string str) {
+
+                cout << str << endl;
 
             }
 
