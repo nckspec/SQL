@@ -50,6 +50,8 @@ const bool SQL_DEBUG = false;
 //  - If you do not close a parenthesis in your conditions, then the program
 //  will crash. If you put a closed parenthesis without open, the program will
 //  crash
+//  - Program will crash if you try to call 'select' on a table where you have
+//  deleted all of the records using the 'delete' command
 
 Vector<mmap<string, long > > value_map;
 
@@ -253,7 +255,10 @@ void test_parser()
 
 //    tests.push_back("batch test");
 
-    tests.push_back("drop table name");
+    tests.push_back("delete from tablename");
+    tests.push_back("delete from tablename where name=spector and age=26");
+    tests.push_back("delete from tablename where (name=spector and age=25) or name = jack");
+    tests.push_back("delete from tablename where name = jack and (age=25 or name = mason)");
 
 
     for(unsigned int i = 0; i < tests.size(); i++)

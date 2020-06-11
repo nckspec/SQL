@@ -1511,8 +1511,14 @@ const T & Vector<T>::front() const
 template <class T>
 T & Vector<T>::back()
 {
-    //  PROCESSING: Returns the last element
-    return data[sz - 1];
+
+    if(!empty())
+    {
+        //  PROCESSING: Returns the last element
+        return data[sz - 1];
+    }
+
+
 }
 
 /**********************************************************
@@ -1523,14 +1529,23 @@ T & Vector<T>::back()
 *_________________________________________________________
 * PRE-CONDITIONS
 *
+*
 * POST-CONDITIONS
 *   - Returns the last element of the vector
 ***********************************************************/
 template <class T>
 const T & Vector<T>::back() const
 {
-    //  PROCESSING: Returns the last element
-    return data[sz - 1];
+    if(!empty())
+    {
+        //  PROCESSING: Returns the last element
+        return data[sz - 1];
+    }
+
+
+
+
+
 }
 
 template <class T>
